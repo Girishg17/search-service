@@ -27,7 +27,10 @@ public class SearchServiceImpl implements SearchService {
     }
 
     public void indexProductInElasticsearch(ProductDto product) {
-      //  Merchant merchant = merchantRepository.findById(product.getMerchant().getId()).orElseThrow();
+
+        String merchantNameUrl = "http://localhost:8082/api/users/merchantname/" + product.getMerchantId();
+        String merchantName = restTemplate.getForObject(merchantNameUrl, String.class);
+
 
         ProductDocument document = new ProductDocument();
         document.setId(product.getId());
@@ -37,15 +40,18 @@ public class SearchServiceImpl implements SearchService {
         document.setStock(product.getStock());
         document.setFile(product.getFile());
         document.setMerchantId(product.getMerchantId());
-       // document.setMerchantName("some name");//tobe implent
+        document.setMerchantName(merchantName);
         document.setProductRating(product.getRating());
-//        document.setMerchantTotalProducts(merchant.getProducts().size());
         document.setMerchantTotalOrders(getTotalOrdersForMerchant(product.getMerchantId()));
         document.setRatingCount(product.getRatingCount());
 
         productSearchRepository.save(document);
     }
 
+
+   public void  deleteAllProducts(){
+        productSearchRepository.deleteAll();
+   }
     private double calculateWeightedScore(ProductDocument product) {
         double ratingWeight = 0.4;
         double totalOrdersWeight = 0.35;
@@ -56,7 +62,6 @@ public class SearchServiceImpl implements SearchService {
                 (product.getProductRating() * ratingWeight) +
                 (product.getPrice() * priceWeight) +
                 (product.getMerchantTotalOrders() * totalOrdersWeight);
-        //  System.out.println("score" + product.getMerchantName() + score);
         return score;
     }
 
@@ -82,6 +87,6 @@ public class SearchServiceImpl implements SearchService {
 
         Integer totalOrders = restTemplate.getForObject(url, Integer.class, uriParams);
 
-        return totalOrders != null ? totalOrders : 0; // Return 0 if response is null
+        return totalOrders != null ? totalOrders : 0;
     }
 }

@@ -33,7 +33,6 @@ public class ProductSearchController {
     }
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
-        // Perform deletion from Elasticsearch or any other related actions
         searchService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
@@ -42,5 +41,9 @@ public class ProductSearchController {
     public ResponseEntity<Void> incrementMerchantOrders(@PathVariable Long merchantId) {
         searchService.incrementMerchantOrdersInElasticsearch(merchantId);
         return ResponseEntity.ok().build();
+    }
+    @DeleteMapping("/delete/elastic")
+    public void deleteP(){
+        searchService.deleteAllProducts();
     }
 }

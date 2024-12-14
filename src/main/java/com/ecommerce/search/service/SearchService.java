@@ -10,4 +10,5 @@ public interface SearchService {
     void indexProductInElasticsearch(ProductDto product);
     void incrementMerchantOrdersInElasticsearch(Long merchantId);
     void deleteById(Long id);
+    void deleteAllProducts();
 }
